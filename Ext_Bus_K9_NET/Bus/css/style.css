@@ -1,0 +1,69 @@
+/* CSS Document */
+*{ margin:0px; padding:0px;}
+img{ border:0px;}
+ul{ list-style:none;}
+body,html{ font:12px "宋体"; height:100%;}
+#warp{ width:100%; height:100%; overflow:hidden; position:relative;}
+#suggest{
+     width:100px;
+     border:1px solid black ;
+     font-size:14px ;
+     z-index:101;
+}
+div.out{
+    border:1px solid #FFFFFF ;
+    background :#FFFFFF;
+}
+div.over{
+    border:1px solid #999 ;
+    background :#FFFFCC ;
+    cursor:hand; 
+}
+#header{ width:100%; height:110px; overflow:hidden; background:url(../images/header.jpg) no-repeat;}
+#top_rearch{ position:absolute;left:635px;top:5px;}
+#top_rearch ul li{ float:left;}
+#top_rearch a:link { color: #78B002; cursor:pointer;}
+#top_rearch a:visited { color: #78B002; cursor:pointer;}
+#top_rearch a:hover { color: #EA9312; cursor:pointer;}
+#top_rearch a:active { color: #2863F8; cursor:pointer;}
+#nav{ background:url(../images/nav_bg.gif) repeat-x; width:100%; height:39px; overflow:hidden; }
+
+/*搜索关键字框*/
+/*
+.search_box{ height:28px; background:#EA9312; position:absolute; top:114px; right:100px; overflow:hidden;}
+.search_box_left{  height:26px; float:left; padding-top:2px !important; padding:2px 0px 0px 2px; overflow:hidden;}
+.search_box_right{ width:62px; height:26px; float:left; padding-top:2px;}
+p{ float:left; padding:5px 2px 0px 2px;}
+/*
+.search_inputbox{ width:121px; font:14px "宋体"; color:#f00; padding:4px 0px 0px 2px; border:1px solid #012199;  float: left;}
+*/
+/*左侧结果框*/
+#condition{ width:247px;position:absolute; top:100px; left:-218px; left:0px;}/*注意：因为style为负数，要让js获取得到,所以我在<style />标签 和html中重复写了left的值。*/
+#left_part{ width:220px; float:left; overflow:hidden;}
+#condition_head{ width:220px; height:29px; background:url(../images/condition_head.gif) no-repeat;overflow:hidden;}
+/*
+#s_layer{ margin-top:7px; margin-left:15px !important;margin-left:7px; display:block; float:left;}*/
+#s_rezult{ margin-top:7px; margin-left:5px; display:block; float:left;}
+.layer{ background:url(../images/search_condition.gif) no-repeat; width:82px; height:22px;}
+.layer2{ background:url(../images/search_condition_.gif) no-repeat; width:82px; height:22px;}
+.rezult{ background:url(../images/search_rezult.gif) no-repeat; width:82px; height:22px;}
+.rezult2{ background:url(../images/search_rezult_.gif) no-repeat; width:82px; height:22px;}
+
+#layer_list_page,#rezult_page{ width:100%; height:400px;}
+#layer_body_bg{ width:220px;height:380px; background:url(../images/condition_body_bg.gif) repeat-y top right;overflow:hidden;}
+#layer_body{ width:211px; height:100%; margin:0px auto; font:12px "宋体"; color:#4A4C49;}
+#layer_foot{ width:100%; height:7px; background:url(../images/condition_foot.gif) no-repeat;overflow:hidden;}
+
+#right_part{ width:27px; height:77px; margin-top:15px; overflow:hidden; float:left; cursor:pointer;}
+.go_left{ background:url(../images/btn_goleft.gif) no-repeat 0px -77px;}
+.go_right{ background:url(../images/btn_goleft.gif) no-repeat;}
+
+
+#tool_nav{ position:absolute; top:170px; right:0px;}
+#tool{ width:499px; height:39px;  background:url(../images/tool_bg_1.gif) no-repeat; overflow:hidden;cursor:pointer; z-index:99999999;position:absolute; top:540px; left:100px; }
+#fn{ width:470px; height:32px; padding-top:2px; margin:0px auto; display:block;}
+#fn ul li{ float:left; padding:0px 5px 0px 5px;}
+
+#copyright{ width:100%; height:29px; position:absolute; left:0px; bottom:0px; overflow:hidden;}
+#copyright_bg{ width:100%; height:29px; background:url(../images/copyright_bg.gif) repeat; overflow:hidden;}
+#copyright_bg span{ width:366px; height:29px; display:block; background:url(../images/copyright_txt.gif) no-repeat;margin:0px auto;}

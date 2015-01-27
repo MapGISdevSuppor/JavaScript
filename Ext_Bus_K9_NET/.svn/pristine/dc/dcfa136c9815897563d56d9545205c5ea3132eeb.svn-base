@@ -1,0 +1,670 @@
+﻿var map;
+hdivs=["lsForm","bsForm","nsForm"];
+
+//改变菜单按钮
+function changeStyle(obj,index)
+{
+    var aarr = document.getElementsByName("tool");
+    for(var i=0;i<aarr.length;i++){
+        aarr[i].className='btnTool btnTool1';
+        document.getElementById("cmdGroup"+i).style.display="none";
+        aarr[i].style.display="none";
+    }
+    obj.className='btnTool btnTool2';
+    obj.style.display="block";
+    document.getElementById("cmdGroup"+index).style.display="";
+}
+function showToolParent()
+{
+    var aarr = document.getElementsByName("tool");
+    for(var i=0;i<aarr.length;i++){
+    aarr[i].style.display="block";
+    }
+}
+function funChageClean(){
+    //清除小车（公交换乘，路径分析）
+	if(typeof(car)!='undefined'&&car !=null){
+        for(var i = 0; i <car.length ; i++){   
+            if(car[i]!=null){ 
+                car[i].clearVar() 
+            }
+         }
+        car = null ;
+    }
+    document.getElementById("rezultframe").innerHTML='<iframe id="rsFrame" style="BORDER: 0px; WIDTH: 100%; HEIGHT: 100%" src="" frameBorder="0" scrolling="auto" onload="loadBar(0)"></iframe>';
+    switchdiv(0);
+}
+
+
+function switchdiv(type){
+return;
+        if(typeof rs_Panel=="undefined")rs_Panel=$("rsPanel");
+        if(typeof mm_Panel=="undefined")mm_Panel=$("mmPanel");
+        Element.hide("rsPanel");
+        Element.hide("mmPanel");
+        var th=$("rsTitle").getElementsByTagName("th");
+        for(var i=0;i<th.length;i++){
+            th[i].className="";
+        }
+        th[type].className="th1";
+        if(type==1){
+            Element.show("rsPanel");
+        }else{
+            Element.show("mmPanel");
+        }
+    }
+
+function getPageSize() {
+    var xScroll, yScroll;
+    if (window.innerHeight && window.scrollMaxY) {
+        xScroll = document.body.scrollWidth;
+        yScroll = window.innerHeight + window.scrollMaxY;
+    } else if (document.body.scrollHeight > document.body.offsetHeight) {
+        xScroll = document.body.scrollWidth;
+        yScroll = document.body.scrollHeight;
+    } else {
+        xScroll = document.body.offsetWidth;
+        yScroll = document.body.offsetHeight;
+    }
+    var windowWidth, windowHeight;
+    if (self.innerHeight) { // all except Explorer
+        windowWidth = self.innerWidth;
+        windowHeight = self.innerHeight;
+    } else if (document.documentElement && document.documentElement.clientHeight) { // Explorer 6 Strict Mode
+        windowWidth = document.documentElement.clientWidth;
+        windowHeight = document.documentElement.clientHeight;
+    } else if (document.body) { // other Explorers
+        windowWidth = document.body.clientWidth;
+        windowHeight = document.body.clientHeight;
+    }
+    if (yScroll < windowHeight) {
+        pageHeight = windowHeight;
+    } else {
+        pageHeight = yScroll;
+    }
+    if (xScroll < windowWidth) {
+        pageWidth = windowWidth;
+    } else {
+        pageWidth = xScroll;
+    }
+    arrayPageSize = new Array(pageWidth, pageHeight, windowWidth, windowHeight);
+    return arrayPageSize;
+}
+function resize()
+{
+//    var w=getPageSize()[2];
+//    var h=getPageSize()[3]-2;     
+//    var nh=$("content").style.height=h-Element.getHeight("header");
+//    var lh=Element.getHeight("leftPanel");
+//    $("rightPanel").style.height
+//            =$("leftPanel").style.height
+//            =nh-2+"px";
+//    $("rsPanel").style.height
+//            =$("mmPanel").style.height
+//            =nh-Element.getHeight("rsTitle")-2+"px";
+//    $("mmPanel").style.height=$("mmPanel").offsetHeight+Element.getHeight("rsTitle")+"px";
+    var panel=$("zdims");
+    panel.style.width=panel.parentNode.clientWidth+"px";
+    panel.style.height=panel.parentNode.clientHeight+"px";
+
+    mapResize();
+    if(map){map.OnResize()}
+     autoHeight();
+autowidth();
+//    if($("toolFrame").src=="") $("toolFrame").src="menu.htm";
+//    else toolFrame.ResizeWindow();
+}
+var pro=null;
+var loaderObj=null;
+var contextMenu;
+//初始化地图
+
+function initMap(strlatlon,zoom){
+//    resize();
+    loadMap(IMSMapConfig1);
+
+	 //右键菜单
+    var iconList = new Array("images/1.gif","images/2.gif","images/3.gif","images/4.gif","images/5.gif","images/6.gif","images/7.gif","images/8.gif","images/9.gif");   // icon数组
+    var menuName = new Array("放 大","缩 小","移 动","复 位","更 新","鹰眼","放大镜","测量距离","测量面积");
+    var commandList = new Array("map.setCurOper(1001)","map.setCurOper(1002)","map.setCurOper(1003)","map.setCurOper(1004)","onDisplayToolClick('reflash')","EagleDisplay()","map.setCurOper(3003)","map.setCurOper(3001)","map.setCurOper(3002)");
+    contextMenu = new RtMenu($("zdims"),iconList,menuName,commandList);
+    contextMenu.showMenu();
+
+    //初始跳转到指定位置
+    map.jumpMap(114.29, 30.56, 4);
+}
+
+function loadMap(mapConfig)
+{
+    map = new IMSMaps("zdims",mapConfig);
+    
+    var sc = new IMSScale();
+    sc.setUnits([103133.845,1000],["米","千米"]);
+    map.sco = sc;
+    map.addControl(sc,false);
+    
+    //var s = new IMSNavigation();
+    //map.addControl(s,false);
+    
+    var l = new IMSLogo();
+    map.addControl(l,false);
+    
+    pro = new IMSSearch(map);    
+    map.addControl(pro,false);
+    //鹰眼
+    var eo = new IMSEagleMap();
+    map.addControl(eo,false);
+    
+    
+    var mo = new IMSMeasure();
+    mo.setDistanceUnits([103133.845,1000],["米","千米"]);
+    mo.setAreaUnits([10636589908.557,1000000],["平方米","平方千米"]);
+    map.addControl(mo,false);
+    
+    var pntFlashDiv = document.createElement("div");
+    pntFlashDiv.id = "pntFlashDiv";
+    pntFlashDiv.style.position = "absolute";
+    map.addControl(pntFlashDiv,true);
+    //操作状态
+
+    var os = new IMSOperStatus();
+    map.addControl(os,false);
+    //进度条
+
+    var loader = new IMSLoader();
+    map.addControl(loader,false);
+}
+
+
+
+
+//进度条
+
+function loadBar(fl)
+{
+    var el=document.getElementById('loader');
+	if(null!=el)
+	{
+		var top = 3;
+		var left = (document.body.clientWidth) - 130;
+		if( left<=0 ) left = 10;
+		el.style.visibility = (fl==1)?'visible':'hidden';
+		el.style.display = (fl==1)?'block':'none';
+		el.style.left = left + "px"
+		el.style.top = top + "px";
+		el.style.zIndex = 2;
+	}
+}
+
+function mapResize(x,y){
+    x=x?parseInt(x):0;
+    y=y?parseInt(y):20;
+    var mapPNode = $("zdims").parentNode;
+	var w = mapPNode.clientWidth-x;
+	var h = mapPNode.clientHeight-y;
+    if(typeof maplet=="object")map.resize(w, h);
+}
+function setOpeMode(activeTool,drawAction){
+     map.activeTool = activeTool;
+     map.drawAction = drawAction; 
+}
+
+Event.observe(window,"load",function(){initMap();});
+Event.observe(document,"click",function()
+{
+    if(contextMenu!=null)
+        contextMenu.hiddenMenu();
+});
+function pageload(){
+//document.getElementById('toolFrame').src='menu.htm';
+document.getElementById('rsFrame').src='';
+autoHeight();
+autowidth();
+showConditionDis();
+document.getElementById('header').onresize=resize;
+};
+
+var flashTimes=3,flashInterval=0.3,flashColor="#ff0000";
+var userTarget;
+var userActive;
+var subParam="";
+
+function onDisplayToolClick(con)
+{
+    var type = con
+    switch(type)
+    {
+        case "reflash":
+            map.refresh();
+        break;
+        case "Condition":
+            userActive = "SelectByCondition";
+            subParam="";
+            var url = "VectorPage/SelectByCondition.aspx?rnd="+Math.random();
+            renderSelectResult(url);
+        break;
+        case "queryChart":
+            map.setCurOper(1003);
+            var url = "VectorPage/AttributeCon.aspx?rnd="+Math.random();
+            renderSelectResult(url);
+        break;
+    }
+}
+
+function bufferSet(num)
+{
+    var pixelX = map.logicXlength/map.pObj.offsetWidth;
+    return pixelX*num;
+}
+
+function renderSelectResult(url){
+        //设置进度条为繁忙状态
+
+    var obj = document.getElementById("rsFrame");
+    if(obj==null)
+    {
+        document.getElementById("rezultframe").innerHTML='<iframe id="rsFrame" style="BORDER: 0px; WIDTH: 100%; HEIGHT: 100%" src="" frameBorder="0" scrolling="auto" onload="loadBar(0)"></iframe>';
+        obj = document.getElementById("rsFrame");
+    }
+      if(url.length>2048)
+    {
+        alert("点数过多！url超过最大长度！");
+        return;
+    }
+    obj.src = url;
+//    switchdiv(1);
+ showConditionDis();
+     showRez();
+    }
+
+function submitUrl(param)
+{
+    var url = "VectorPage/"+userParam+"?" + param+"&op="+userActive;
+    subParam = param;
+    loadBar(1);
+    renderSelectResult(url);    
+}
+
+////////////////////////////////////////////////////////////////////查询结果显示/////////////////////////////////////////////////////////////
+function cbQuery(response){
+    var resArr=GetResponseArray(response);
+    ShowResult(resArr);
+//    switchdiv(1);
+ showConditionDis();
+     showRez();
+}
+function GetResponseArray(response) {
+	loadBar(0);
+    this.mulRes=new Array();
+    if( response == null || (typeof(response) != "string" || response == ""))
+		return this.mulRes;
+	
+    var i=0;
+    var xmlDoc = response.trim();
+    if(typeof(response) == "string") {
+        if (document.implementation.createDocument){ 
+            // firefox，创建DOMParser
+            var parser = new DOMParser(); 
+            xmlDoc = parser.parseFromString(response, "text/xml"); 
+        } else if (window.ActiveXObject){ 
+            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.loadXML(response);
+        }
+    }
+    var LocPnt = xmlDoc.getElementsByTagName('P');
+    for (var i=0;i<LocPnt.length;i++) {
+        var x = GetNodeValue(LocPnt[i],'X');
+        var y = GetNodeValue(LocPnt[i],'Y');
+        var name = GetNodeValue(LocPnt[i],'N');
+        var layer = GetNodeValue(LocPnt[i],'L');
+        if(layer=="")
+			layer =-1;
+        this.mulRes[this.mulRes.length] = new locPntAll(name,x,y,layer);
+    }
+   
+    return this.mulRes;
+}
+//获取XML文档中节点的值
+
+function GetNodeValue(obj,tag) {
+	if(obj.getElementsByTagName(tag)[0]==null)
+		return "" ;
+    if (obj.getElementsByTagName(tag)[0].firstChild!=null)
+	    return obj.getElementsByTagName(tag)[0].firstChild.nodeValue;
+	else
+	    return "";
+}
+
+function locPntAll(name,x,y,layer) {
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.layer = layer
+}
+////////////////////////////////////////////////////查询结果显示//////////////////////////////////////////////////////////////////
+var maxperpage=11;
+var mulRes=new Array();
+var infoShowFlag = true ;//用于是否显示详细信息提示框（true为显示， false为不显示）
+
+var curIndex =-1 ;
+function locPntInfo(lx,ly,head,content,layer) {
+    this.lx = lx;           //逻辑坐标
+    this.ly = ly;
+    this.head = head;
+    this.content = content;
+    this.layer = layer
+}
+var locPntInfoArr ;
+var queryZoomFlag = true
+ShowResult=function(objRes) {
+    if(queryZoomFlag){
+        map.addEventListener("zoom",MdotLocation,false);
+        queryZoomFlag = false ;
+    }
+    mulRes=objRes;
+    curPage = 0;
+    locPntInfoArr= new Array();
+    //创建存放信息点的div层
+
+    var locPntDiv = document.getElementById("locPntDiv") ;
+    if(locPntDiv ==null){
+        locPntDiv=document.createElement("DIV");
+        locPntDiv.id="locPntDiv";
+        locPntDiv.style.position="absolute";
+        locPntDiv.style.zIndex="6";
+        locPntDiv.style.left = "0px";
+        locPntDiv.style.top  = "0px";
+        map.addControl(locPntDiv,true);
+        ZDEvent.addListener(locPntDiv, "mousedown", StopBubble, false);
+      //  ZDEvent.addListener(locPntDiv, "mouseup", StopBubble, false);
+        ZDEvent.addListener(locPntDiv, "dblclick", StopBubble, false);
+        ZDEvent.addListener(locPntDiv, "mouseout", StopBubble, false);
+        ZDEvent.addListener(locPntDiv, "click",StopBubble, false);
+        ZDEvent.addListener(locPntDiv, "mousewheel", StopBubble, false);
+    }
+    locPntDiv.style.display = "block" ;
+    var tableHtml = '<tr><td width="15%" height="30" align＝center>标识</td><td width="11%" height="30"><div align="center">序号</div></td><td width="74%"><div align="center">名称</div></td></tr>';
+    var i=0;
+    for (var i=0;i<mulRes.length;i++) {
+        if(i<maxperpage) {
+			var imgStr = (mulRes[i].layer==-1)?"p"+(i+1):"i"+mulRes[i].layer ;
+            tableHtml += '<tr><td width="15%" height="30"><div align="center"><img src="images/'+imgStr+'.gif" width ="16px" height="16px"></div></td><td width="11%" height="30"><div align="center">'+(i+1)+'</div></td>';
+            tableHtml += '<td width="74%"><div align="center"><a href="javascript:loc('+i+')">'+mulRes[i].name+'</a></div></td></tr>';
+            locPntInfoArr[i] = new Object();
+            locPntInfoArr[i] = new locPntInfo(mulRes[i].x,mulRes[i].y,mulRes[i].name,mulRes[i].name,mulRes[i].layer);
+        } else
+            break ;
+    }
+    tableHtml +='<tr><td align="right" height="30"  colSpan=3><font color="#2872BE">转到第<input type=text size=3 id=pages>页&nbsp;<input type=button value="跳转"  onclick="jump(document.getElementById(\'pages\').value,1)">&nbsp;&nbsp;</font></td></tr>'
+ showConditionDis();
+     showRez();
+    var  resDiv = document.getElementById('rezultframe');
+    if(resDiv!=null)
+        resDiv.innerHTML = '<table width="100%" border="1" cellpadding="0" cellspacing="0"><tr><td align="center" height="30" colSpan=3>共<font color=red>'+mulRes.length
+        +'</font>条记录◆<a href="JavaScript:jump(-1,0)"><font color="#006600">上页</font></a>◆<a href="JavaScript:jump(1,0)"><font color="#006600">下页</font></a></td></tr>'+tableHtml+'</table>';
+
+    if(locPntInfoArr.length)
+          MdotLocation();
+    else {
+        var locPntDiv = document.getElementById("locPntDiv");
+        if(locPntDiv!=null)
+        locPntDiv.innerHTML="";
+    }
+
+}
+    
+    
+window.loc=function(i) {
+    if(curIndex!=-1){
+        var temp = $("InfoTable"+curIndex) ;
+          if(temp!=null)temp.style.visibility="hidden"; 
+    }
+    curIndex = i%maxperpage ;
+    hiddenPnt(false);
+    dotLocation(mulRes[i].x,mulRes[i].y,mulRes[i].name,mulRes[i].name,mulRes[i].layer,(i%maxperpage));
+     
+}
+
+jump=function(num,mode) { //mode 0为一般跳转，1为通过页数跳转
+    curIndex=-1;
+    if(mode == 0)
+        curPage += (num);
+    else {
+        if(num.match("^[0-9]+$")==null) {
+            alert("请输入数字！");
+            return;
+        }
+        curPage = parseInt(num)-1;
+    }
+    n = Math.floor(mulRes.length / maxperpage);
+    if(curPage<0) {
+        curPage = 0;
+    }
+    if(curPage>n) {
+        curPage = n;
+    }
+    var num = 0;
+    locPntInfoArr= new Array();
+    var tableHtml = '<tr><td width="15%" height="30" align＝center>标识</td><td width="11%" height="30"><div align="center">序号</div></td><td width="74%"><div align="center"><DIV align=center>名称</DIV></div></td></tr>';
+     for (i=curPage*maxperpage;i<mulRes.length;++i)  {
+        if(i<(curPage+1)*maxperpage) {
+            num++; 
+            var imgStr = (mulRes[i].layer==-1)?"p"+(i+1):"i"+mulRes[i].layer ;
+            tableHtml += '<tr><td width="15%" height="30"><div align="center"><img src="images/'+imgStr+'.gif" width ="16px" height="16px"></div></td><td width="11%" height="30"><div align="center">'+(i+1)+'</div></td>';
+            tableHtml += '<td width="74%"><div align="center"><a href="javascript:loc('+i+')">'+mulRes[i].name+'</a></div></td></tr>';
+            locPntInfoArr[num-1] = new Object();
+            locPntInfoArr[num-1] = new locPntInfo(mulRes[i].x,mulRes[i].y,mulRes[i].name,mulRes[i].name,mulRes[i].layer);
+        }
+        else
+           break;
+    }
+    tableHtml +='<tr><td align="right" height="30"  colSpan=3><font color="#2872BE">转到第<input type=text size=3 id=pages>页&nbsp;<input type=button value="跳转"  onclick="JavaScript:jump(document.getElementById(\'pages\').value,1)">&nbsp;&nbsp;</font></td></tr>'
+    if(num<11)
+    for(j=num+1;j<maxperpage+1;++j)
+        tableHtml += '<tr><td align="right" height="30"  colSpan=3></td></tr>';
+    var resDiv = document.getElementById("rezultframe");
+    resDiv.innerHTML = '<table width="100%" border="1" cellpadding="0" cellspacing="0"><tr><td align="center" height="30" colSpan=3>共<font color=red>'+mulRes.length
+                     +'</font>条记录◆<a href="JavaScript:jump(-1,0)"><font color="#006600">上页</font></a>◆<a href="JavaScript:jump(1,0)"><font color="#006600">下页</font></a></td></tr>'+tableHtml+'</table>';
+   if(locPntInfoArr.length)
+         MdotLocation();
+}
+//单点定位跳转
+dotLocation=function(x,y,HeadInfo,ContentInfo,layer,index) {
+    if(locPntInfoArr[index] != null)    {
+        locPntInfoArr[index].lx = x;          
+        locPntInfoArr[index].ly = y;
+        locPntInfoArr[index].head = HeadInfo;
+        locPntInfoArr[index].content = ContentInfo;
+        locPntInfoArr[index].layer = layer;
+    } else {
+        locPntInfoArr[index] = new Object();
+        locPntInfoArr[index] = new locPntInfo(x,y,HeadInfo,ContentInfo);
+    }
+    
+    map.pntLocation(x,y);
+    if(infoShowFlag){
+        var locPntDiv = document.getElementById("locPntDiv")
+        var balloon=document.getElementById("balloonImage" + index);
+        if(balloon == null) {
+				var imgStr = (layer==-1)?"p"+(i+1):"i"+layer ;
+                balloon = document.createElement("IMG") ;
+                balloon.id = "balloonImage"+index ; 
+                balloon.src = "images/"+imgStr+".gif" ;                          
+	            balloon.style.zIndex="3";
+	            balloon.style.position="absolute";
+	            balloon.display="block";
+	           	balloon.style.width = "20px"
+				balloon.style.height = "20px"
+	            balloon.onmouseover = function(){balloonDIVOnMouseOver(index)} ;
+	            balloon.onmouseout = function(){balloonOnMouseOut(index)} ;
+	            locPntDiv.appendChild(balloon);
+	            ZDEvent.addListener(balloon, "mousedown", map.OnMapMouseDown, false);
+        } else { 
+            balloon.style.zIndex="3";
+         
+        }
+        balloonDIVOnMouseOver(index);
+        var temp=map.logicToScreen(x,y);
+        var wx=temp[0];
+        var wy=temp[1];
+        balloon.style.left = wx  +"px";     
+        balloon.style.top = wy -20 +"px";    	//图标的高度
+
+    }
+}
+
+function setValue(obj,value) {
+     obj.onmouseover = function(){balloonDIVOnMouseOver(value)} ;
+	 obj.onmouseout = function(){balloonOnMouseOut(value)} ;
+}
+
+//多点定位
+MdotLocation=function() {
+    if(locPntInfoArr.length<=0){
+        map.removeEventListener("zoom",MdotLocation,false);
+        queryZoomFlag = true
+        return ;
+    }
+    var locPntDiv = document.getElementById("locPntDiv")
+	locPntDiv.innerHTML = "";
+    DotInfoShow();
+    for(var i=0;i<locPntInfoArr.length;i++) {
+        var balloon=document.getElementById("balloonImage" + i);
+        if(balloon == null) {
+            var imgStr = (locPntInfoArr[i].layer==-1)?"p"+(i+1):"i"+locPntInfoArr[i].layer ;
+            balloon = document.createElement("IMG") ;
+            balloon.id = "balloonImage"+i ; 
+            balloon.src = "images/"+imgStr+".gif" ;                          
+	        balloon.style.zIndex="3";
+	        balloon.style.position="absolute";
+	        balloon.display="block";
+	        balloon.style.width = "20px"
+	        balloon.style.height = "20px"
+	        locPntDiv.appendChild(balloon);
+	        ZDEvent.addListener(balloon, "mousedown", map.OnMapMouseDown, false);
+	      //  map.addEventListener("mousedown",balloon.onmousedown,false) ;
+	        if(infoShowFlag){
+	            setValue(balloon,i);  
+	        }
+        }
+        var temp=map.logicToScreen(locPntInfoArr[i].lx,locPntInfoArr[i].ly);
+        var wx=temp[0];
+        var wy=temp[1];
+        balloon.style.left = wx + "px";     
+        balloon.style.top = wy -20 + "px"; 
+    }
+}  
+//点定位后,信息框所要显示的内容
+window.DotInfoShow=function(){
+    var locPntDiv = document.getElementById("locPntDiv")
+    if(locPntDiv == null) return;
+    //显示信息
+    var InfoTbDIV = document.createElement("DIV");
+    InfoTbDIV.id = "InfoTable";
+    InfoTbDIV.style.zIndex = "6";
+    InfoTbDIV.style.position="absolute";
+    locPntDiv.appendChild(InfoTbDIV);	
+    ZDEvent.addListener(InfoTbDIV, "mousemove", map.OnMapMouseMove, false);
+    ZDEvent.addListener(InfoTbDIV, "mouseup", StopBubble, false);
+}
+
+//鼠标移出气泡时
+
+ balloonOnMouseOut=function(index) {
+    var balloonTmp = document.getElementById("balloonImage" +index);
+    if(balloonTmp==null) return;
+    //多点定位时使用
+
+    var imgStr = (locPntInfoArr[index].layer==-1)?"p"+(i+1):"i"+locPntInfoArr[index].layer ;
+    balloonTmp.src='images/'+imgStr+'.gif';
+    //单点定位时使用
+
+    balloonTmp.style.zIndex = "3";
+    $("InfoTable"+index).style.visibility="hidden"; 
+}
+//鼠标经过气泡层
+
+balloonDIVOnMouseOver=function(index) { 
+//5.15
+   if(curIndex!=-1){
+        var temp = $("InfoTable"+curIndex) ;
+          if(temp!=null)temp.style.visibility="hidden"; 
+    }
+    var  balloonTmp = $("balloonImage"+index);
+    if(balloonTmp==null) return;
+    balloonTmp.style.zIndex = "3";
+	if(locPntInfoArr.length>0)	{
+        window.DotX = locPntInfoArr[index].lx;
+        window.DotY = locPntInfoArr[index].ly;
+        var InfoDiv = document.getElementById("InfoTable"+index);
+        if(InfoDiv==null){
+            var locPntDiv = document.getElementById("locPntDiv")
+            if(locPntDiv == null) return;
+            InfoDiv = document.createElement("DIV");
+            InfoDiv.id = "InfoTable"+index;
+            InfoDiv.style.zIndex = "6";
+            InfoDiv.style.position="absolute";
+            locPntDiv.appendChild(InfoDiv);	
+            InfoDiv.style.left = parseInt(balloonTmp.style.left) + 15 + "px";
+            InfoDiv.style.top  =  parseInt(balloonTmp.style.top) + 10 + "px";
+            InfoDiv.innerHTML = "" ;
+            var strTmp = "";
+            strTmp = "<table width=172 border=0 cellspacing=0 cellpadding=0 >"
+                +"<tr><td width=7><img src=images/map_bomer_dt_038a.gif width=7 height=32></td>"
+                +"<td width=172 background=images/map_bomer_dt_038.gif >"
+                +"<table width=100% border=0>"
+                +"<tr><td width=85% align=center>详细信息</td>"
+                +"<td align=left><img src=images/closeDiv.gif onmousedown='infoClose("+index+")'  ></td>"
+                +"</tr>"
+                +"</table>"
+                +"</td>"
+                +"</tr>"
+                +"<tr><td rowspan=2>&nbsp;</td>"
+                +"<td width=172 background=images/map_bomer_dt_039.gif>"
+                +"<table width=140 border=0 align=center cellpadding=0 cellspacing=0>"
+                +"<tr><td colspan=3><strong>名称：</strong><br>"+locPntInfoArr[index].head+"</td></tr>"
+                +"<tr><td colspan=3><strong>详细介绍：</strong><br>"+locPntInfoArr[index].content+"<p></td></tr>"
+                +"</table>"
+                +"</td>"
+                +"</tr>"
+                +"<tr><td><img src=images/map_bomer_dt_040.gif width=165 height=5></td></tr>"
+                +"</table>";
+        //信息提示///
+        InfoDiv.innerHTML = strTmp;
+        }
+        InfoDiv.style.visibility="visible";     
+    }	
+
+}
+
+function infoClose(index) {	
+    var u = $("InfoTable"+index);
+    u.style.visibility="hidden";
+    window.locFlag = -1;
+    var balloonTmp =$("balloonImage" +index);
+    if(balloonTmp==null) return;
+    balloonTmp.style.zIndex = "4";	
+}
+
+//鹰眼关闭
+var flag = false ;
+function EagleDisplay(){
+    map.eagleEye.changeViewStatus();
+//    map.eagleEye.setViewStatus(flag)
+//    flag = !flag ;
+}
+
+function hiddenPnt(flag){
+    var locPntDiv = document.getElementById("locPntDiv") ;
+    if(locPntDiv==null)
+        return ;
+    if(flag)
+        locPntDiv.style.display = "none" ;
+    else
+        locPntDiv.style.display = "block" ;
+}
+
+function backMainPage()
+{
+    window.location.href="default.aspx";
+}

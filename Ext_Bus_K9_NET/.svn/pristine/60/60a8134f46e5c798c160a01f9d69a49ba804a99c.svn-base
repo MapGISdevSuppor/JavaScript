@@ -1,0 +1,251 @@
+﻿   var myFlashObjPoint=new Array();
+    var myFlashObjLine = new Array();
+    var myFlashObjPolygon = new Array();
+    var mapObj=top.map;
+    var intervalId=new Array();
+    var regDotArr=new Array();
+    var lineDotArr;
+    var pntDotArr;
+    var pntLogic;
+    var idIndex=0;
+    var idNum=0;
+    var PaletteObj=null;
+
+    function flash(layerIndex,countIndex)
+    { 
+            var arrayIndex=0; 
+        if(myFlashObjPoint!=null&&myFlashObjPoint.length>0)
+        {
+            for(arrayIndex=0;arrayIndex<myFlashObjPoint.length;arrayIndex++)
+            {
+                if(myFlashObjPoint[arrayIndex]!=null)
+                {
+                    myFlashObjPoint[arrayIndex].dispose();
+                }
+            }
+         }
+        if(myFlashObjLine!=null&&myFlashObjLine.length>0)
+        {
+            for(arrayIndex=0;arrayIndex<myFlashObjLine.length;arrayIndex++)
+            {
+                if(myFlashObjLine[arrayIndex]!=null)
+                {
+                    myFlashObjLine[arrayIndex].dispose();
+                }
+            }
+        }
+        if(myFlashObjPolygon!=null&&myFlashObjPolygon.length>0)
+        {
+            for(arrayIndex=0;arrayIndex<myFlashObjPolygon.length;arrayIndex++)
+            {
+                if(myFlashObjPolygon[arrayIndex]!=null)
+                {
+                    myFlashObjPolygon[arrayIndex].dispose();
+                    delete myFlashObjPolygon[arrayIndex];
+                }
+            }
+         }
+       var url = "VectorPage/SelectGeometry.aspx?layerIndex="+layerIndex+"&countIndex="+countIndex+"&qryType=sel&rnd="+Math.random();
+       var pntStr = top.AJAXRequest(url,false,"GET");
+       var xmin = 0;
+       var ymin = 0;
+       var xmax = 0;
+       var ymax = 0;
+       if(pntStr.indexOf("(")!=-1)
+       {
+            alert("获取几何点信息失败！请重新查询");
+       }
+       else 
+       {
+                  
+           var geoArr = pntStr.split('*'); //分割点线区
+
+           //点
+           if (geoArr.length>0&&geoArr[0] != "")
+            {                          
+                var pntArr = geoArr[0].split(';'); //分割各个点
+                for (var i = 0; i < pntArr.length; i++)
+                {  
+                    if(pntArr[i]!="")
+                    {   
+                        pntDotArr =pntArr[i].split(','); //分割各个点的X,Y坐标
+                        if(pntDotArr.length!=2){ 
+                            return;
+                        }
+                        pntScreen = mapObj.logicToScreen(pntDotArr[0],pntDotArr[1]);
+                        idIndex=idNum;
+                        intervalId[idIndex] = setTimeout("checkImgLoaded("+i+","+"'point',"+idIndex+")", 1000);
+                        idNum++;
+                    }
+                }
+                //mapObj.pntLocation(pntDotArr[0],pntDotArr[1]);
+            }
+            //线  
+            if (geoArr.length>1&&geoArr[1] != "")
+            {
+                var lineArr = geoArr[1].split(';');//分割线
+                for (var i = 0; i < lineArr.length; i++)
+                {
+                    if(lineArr[i]!="")
+                    {
+                        lineDotArr = lineArr[i].split(',');//分割各条线上的点坐标            
+                        idIndex=idNum;
+                        intervalId[idIndex] = setTimeout("checkImgLoaded("+i+","+"'line',"+idIndex+")", 1000);
+                        idNum++;
+                    }         
+                }
+                //mapObj.pntLocation(lineDotArr[0],lineDotArr[1]);
+            }
+            //区 
+            if (geoArr.length>2&&geoArr[2] != "")
+            {
+                var regArr = geoArr[2].split(';');//分割区中的复杂线
+                for (var i = 0; i < regArr.length; i++)
+                {
+                    if(regArr[i]!="")
+                    {
+                        var regMultiArr=regArr[i].split(':');//分割复杂线中的所有弧段
+                        for(var j=0;j<regMultiArr.length;j++)
+                        {
+                            regDotArr[j] = regMultiArr[j].split(',');//分割弧段上的各个点坐标
+                            idIndex=idNum;
+                            intervalId[idIndex] = setTimeout("checkImgLoaded("+j+","+"'reg',"+idIndex+")", 1000);
+                            idNum++;
+                        }      
+                   
+                    }
+                }
+                //mapObj.pntLocation(regDotArr[0][0],regDotArr[0][1]);
+            }
+        }
+    }
+
+    function DrawPnt()
+    {
+        var flashPntDiv = top.document.getElementById("pntFlashDiv");
+        if(flashPntDiv!=null)
+        {
+            flashPntDiv.style.left = pntScreen[0]-6+'px';
+            flashPntDiv.style.top =pntScreen[1]-6+'px';
+            flashPntDiv.innerHTML = "<img src='images/lableBar.gif' />";
+            flashPntDiv.style.visibility = "visible";
+        }
+    }
+    
+    var times;
+    var pntFlashTime;
+    function FlashPnt()
+    {
+        var flashDiv = top.document.getElementById("pntFlashDiv");
+        if(times>0)
+        {
+            times--;
+            flashDiv.style.visibility = (flashDiv.style.visibility == "hidden")?"visible":"hidden" ;
+            pntFlashTime=setTimeout("FlashPnt()",500);  
+        }
+        else
+        {
+	        flashDiv.style.visibility = "hidden"; 
+	    	clearTimeout(pntFlashTime);
+	    	flashDiv.innerHTML="";
+		}
+    }
+    
+    function checkImgLoaded(j,drawType,idindex)
+    {
+        var flashTimes,flashInterval,flashColor;
+        var n=0;
+            flashTimes = top.flashTimes
+            flashInterval = top.flashInterval
+            switch(drawType)
+            {
+                case "point":
+                    var pntDiv = top.document.getElementById("pntFlashDiv");
+                    if(pntDiv==null)
+                    {
+                        pntDiv = top.document.createElement("div");
+                        pntDiv.id = "pntFlashDiv";
+                        pntDiv.style.position = "absolute";
+                        pntDiv.style.visibility = "hidden";
+                        mapObj.addControl(pntDiv,true);
+                    }
+                    if(pntDotArr.length==2)
+                    {
+                        times = top.flashTimes*2;
+                        clearTimeout(pntFlashTime);
+                        DrawPnt();
+                        FlashPnt();  
+                    }   
+                    break;
+                case "line":
+                    var len = parseInt(lineDotArr.length/2);
+                    var lineDotInfo = new Array();
+                    for(i = 0;i<len;i++)
+                    {
+                        var screenXY = mapObj.logicToScreen(lineDotArr[i*2],lineDotArr[i*2+1])
+                        lineDotInfo.push(screenXY[0]+","+screenXY[1]);
+                    }
+                    var vecDiv = top.document.getElementById("vecDiv");
+                    if(vecDiv==null)
+                    {
+                        vecDiv = top.document.createElement("div");
+                        vecDiv.id = "vecDiv";
+                        vecDiv.style.position = "absolute";
+                        mapObj.addControl(vecDiv,true);
+                    }
+                    var PaletteObj = new top.IMSPalette(vecDiv,"polyline");
+                    PaletteObj.setStyle(top.flashColor,2);
+	                PaletteObj.draw(lineDotInfo);
+	                PaletteObj.flash(top.flashTimes,flashInterval);
+                    break;
+                case "reg":
+                    if(j!=0) return;
+                    var len = parseInt(regDotArr[j].length/2);
+                    var regDotInfo = new Array();
+                    for(i = 0;i<len;i++)
+                    {
+                        var screenXY = mapObj.logicToScreen(regDotArr[j][i*2],regDotArr[j][i*2+1])
+                        regDotInfo.push(screenXY[0]+","+screenXY[1]);
+                    }
+                    var vecDiv = top.document.getElementById("vecDivReg");
+                    if(vecDiv==null)
+                    {
+                        vecDiv = top.document.createElement("div");
+                        vecDiv.id = "vecDivReg";
+                        vecDiv.style.position = "absolute";
+                        mapObj.addControl(vecDiv,true);
+                    }
+                    var PaletteObj = new top.IMSPalette(vecDiv,"area");
+                    PaletteObj.setStyle(top.flashColor,2);
+	                PaletteObj.draw(regDotInfo);
+	                PaletteObj.flash(top.flashTimes,flashInterval); 
+                    break;
+                default:
+                    break;
+            }
+            clearTimeout(intervalId[idindex]);
+    }
+    function PageIndexClick(index)
+    {	
+	     self.location.href = "SelectAttribute.aspx?pageIndex="+index+"&firstSelect="+"1"+"&rnd="+Math.random();
+    }
+    function expend(el)
+	{
+		//取隐藏块对象
+		var block = el.parentNode.nextSibling;
+		if(block!=null&&block.nodeName!="DIV")
+		    block=block.nextSibling;
+		el.src=block.style.display=="none"?"../images/sub.gif":"../images/plus.gif";
+		block.style.display=block.style.display=="none"?"block":"none";
+	}
+	
+	function edit(selLayerIndex,countIndex,layer)
+	{
+        var url = "VectorPage/AttEdit.aspx?layer="+layer+"&selLayerIndex="+selLayerIndex+"&countIndex="+countIndex+"&rnd="+Math.random();
+        top.document.getElementById("rsFrame").src = url;
+    }
+    function Close()
+	{
+	    top.document.getElementById("rsFrame").src = "";
+	    top.switchdiv(0);
+	}

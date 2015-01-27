@@ -1,0 +1,15 @@
+﻿//显示站点输入框
+function ShowInputBox(obj) {
+    $("busStopBox").style.display = "block";
+    $("busStopBox").innerHTML += "<div id='close' onclick=$('busStopBox').hide() style='position:absolute;z-index:3000;top:0;right:0;cursor:pointer;'><img src='images/close.gif' /></div>";
+}
+//清除查询结果
+function ClearResult() {
+//    if (car != null) {
+//        for (var i = 0; i < car.length; i++) {
+//            car[i].clearVar();
+//        }
+    //    }
+    funChageClean();
+}
+  
