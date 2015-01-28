@@ -1,0 +1,142 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>iframeImg.html</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="EgleJS/Polt.js"></script>
+		<script type="text/javascript" src="EgleJS/JHashMap.js"></script>
+
+		<!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+		<style type="text/css">
+			body {
+					margin: 0px;
+					padding: 0px;
+					overflow: hidden;
+				}
+		</style>
+		<script type="text/javascript">
+
+		    /**
+		    * 鹰眼说明：
+		    *
+		    * 将此页面加入到与主页同级的目录下，保证images/egle中有d_arrow.gif和h_arrow.gif两张图片
+		    * 将<div id="egle_position" style="position: absolute; bottom: 0px; right: 0px; width: 200px; height: 150px; z-index: 4998; 			display: block">
+		    <iframe id="egle" frameborder="0" src="egle.html" style="left: 0px; scrolling: no; top:0px; width: 100%; height: 		100%; background-color: transparent; z-index: 999">
+		    </iframe>
+		    </div>加入主页面中。鹰眼会位于页面的右下角
+		    *
+		    * 鹰眼页面中的xmin；xmax；ymin；ymax；path；imgWidth；imgHeight值需要自行设置参数含义见参数后说明
+		    *     xmin；xmax；ymin；ymax的值可以在地图编辑器中查看地图范围来获得
+		    *
+		    * 注意：所加鹰眼图片的宽不能超过200，高不能超过是150.图片不能留多余的空白。可以通过地图编辑器中 文件->输出web图片->
+		    * 勾上和数据等比缩放->填写图片宽度(此时图片的宽度和高度即为imgWidth和imgHeight的值) 来输出web图片，图片格式最好为png。
+		    *
+		    */
+
+
+		    //获取地图上的显示范围
+		    var xmin = 443061.9357; //地图实际范围的x最小坐标值
+		    var xmax = 742289.4173; //地图实际范围的x最大坐标值
+		    var ymin = 3913217.0038; //地图实际范围的y最小坐标值
+		    var ymax = 4455894.7199; //地图实际范围的y最大坐标值
+		    var path = "images/egleImg/kq.png"; //图片的路径
+		    var imgWidth = 80;      //图片的宽
+		    var imgHeight = 145;    //图片的高
+
+		    var oldHeight = 0;
+		    var oldx = 0;
+		    var oldy = 0;
+		    function getMapRect() {
+		        var curInfo = parent.NaviOpObj.GetViewInfo();
+		        var curInfoArr = curInfo.split(",");
+		        var curHeight = curInfoArr[3] * 1;
+		        if (oldx != curInfoArr[0] || oldy != curInfoArr[1] || curHeight != oldHeight) {
+		            oldx = curInfoArr[0];
+		            oldy = curInfoArr[1];
+		            var rad = 22.5 * (3.1415926 / 180); //计算弧度
+		            var yTan = Math.tan(rad) * curHeight;
+		            var viewPort = parent.NaviOpObj.GetViewPortSize();
+		            var viewPortArr = viewPort.split(",");
+		            var xTan = (viewPortArr[0] / viewPortArr[1]) * yTan;
+		            var x = curInfoArr[0] * 1 - xTan; //计算当前视角的x最小坐标值
+		            var y = curInfoArr[1] * 1 - yTan; //计算当前视角的y最小坐标值
+		            var x1 = curInfoArr[0] * 1 + xTan; //计算当前视角的x最大坐标值
+		            var y1 = curInfoArr[1] * 1 + yTan; //计算当前视角的y最大坐标值
+		            x = (x - xmin) / ((xmax - xmin) / imgWidth);
+		            y = imgHeight - (y - ymin) / ((ymax - ymin) / imgHeight);
+		            x1 = (x1 - xmin) / ((xmax - xmin) / imgWidth);
+		            y1 = imgHeight - (y1 - ymin) / ((ymax - ymin) / imgHeight);
+		            drawRect('main', 0, 0, '#1b437a', 'yellow', 1, "6,64,20,64,20,30,6,30");
+		            clean();
+		            var points = x + "," + y + "," + x1 + "," + y + "," + x1 + "," + y1 + "," + x + "," + y1;
+		            drawRect('main', 0, 0, '#1b437a', 'yellow', 1, points);
+		        }
+		    }
+
+		    var PoltObjRect = new Polt();
+		    function drawRect(containerId, ox, oy, baseLineColor, brushColor, brushWeight, points) {
+		        PoltObjRect.init(containerId, ox, oy, baseLineColor, brushColor, brushWeight);
+		        //Plot.init('main', 0, 0, '#1b437a', 'yellow', 1);
+		        var t = [];
+		        //var points = "6,64,20,64,20,30,6,30";
+		        var pointsArr = points.split(",");
+		        for (var i = 0; i < pointsArr.length; i = i + 2) {
+		            t.push({
+		                x: pointsArr[i] * 1,
+		                y: 0 - pointsArr[i + 1]
+		            });
+		        };
+		        t.push({
+		            x: pointsArr[0] * 1,
+		            y: 0 - pointsArr[1]
+		        });
+
+		        PoltObjRect.polygon(t);
+		    }
+
+		    function clean() {
+		        PoltObjRect.clean();
+		    }
+
+		    function haveLoad() {
+		        document.getElementById('eglemapID').style.left = (200 - imgWidth) / 2;
+		        document.getElementById('eglemapID').style.bottom = (150 - imgHeight) / 2;
+		        document.getElementById('main').style.left = (200 - imgWidth) / 2;
+		        document.getElementById('main').style.bottom = (150 - imgHeight) / 2;
+		        // document.getElementById('main2').style.left = (200 - imgWidth)/2;
+		        // document.getElementById('main2').style.bottom = (150 - imgHeight)/2;
+		        document.getElementById('eglemapID').src = path;
+		    //    window.setInterval(getMapRect, 10);
+		        getMapRect();
+		    }
+
+		    function egleHideShow() {
+		        var width = parseInt(parent.document.getElementById('egle_position').style.width);
+		        if (width == 15) {
+		            document.getElementById('hideshowID').src = "images/egleImg/d_arrow.gif"
+		            parent.document.getElementById('egle_position').style.width = "200px";
+		            parent.document.getElementById('egle_position').style.height = "150px";
+		        } else {
+		            document.getElementById('hideshowID').src = "images/egleImg/h_arrow.gif"
+		            parent.document.getElementById('egle_position').style.width = "15px";
+		            parent.document.getElementById('egle_position').style.height = "15px";
+		        }
+		    }
+		</script>
+	</head>
+	<body onload="haveLoad()">
+		<div id="hideshowDIV" style="position: absolute; width: 15px; height: 15px; z-index: 2;cursor: pointer;">
+		   <img id="hideshowID" src="images/egleImg/d_arrow.gif" style="border:0px;" onclick="egleHideShow()"/>
+		</div>
+		<div id="imgdiv" style="position: absolute;border-bottom: solid red 0px;background-color:#1b437a; top: 0px; left: 0px; height: 100%; width: 100%;">
+			<img id="eglemapID" style="position: absolute; left: 0px; border: 0px;display: block;"
+				alt="鹰眼" src="" usemap='#hotMap' title="鹰眼">
+		</div>
+		<div id="main"
+			style="position: absolute; top: 0px; border-bottom: solid red 0px; height: 150px; width: 80px; z-index: 10000">
+		</div>
+		<script type="text/javascript">
+	
+		</script>
+	</body>
+</html>

@@ -1,0 +1,99 @@
+ .text {
+	font-size: 12px;
+	color: #003399;
+	left: 117px;
+}
+
+.tab {
+	width: 200px;
+}
+
+#label_panel_out {
+	top: 0px;
+	left: float;
+	width: 240px;
+	background-color: #F0FFFF;
+	height: 100%;
+	border: 1px solid #2166a5;
+	position: absolute;
+}
+
+#left {
+	top: 0px;
+	left: 0px;
+	width: 225px;
+	background-color: #F0FFFF;
+	height: 100%;
+	border: 1px solid #2166a5;
+	position: absolute;
+}
+
+#left_header {
+	width: 223px;
+	height: 22px;
+	background: url(../images/iframe/head.gif) repeat-x;
+}
+
+#left_body_bg {
+	width: 223px;
+	height: 100%;
+	background: url(../images/iframe/left_body_bg.gif) repeat-y;
+}
+
+#left_body {
+	width: 217px;
+	height: 100%;
+	margin: 0px auto;
+}
+
+#iframe_header {
+	width: 223px;
+	height: 19px;
+	background: url(../images/iframe/searchabout.gif) repeat-x;
+	top: 0px;
+	left: 0px;
+	position: absolute;
+}
+.TDEButton_mouseout
+{
+	width:70px;
+	height: 23px;
+	margin:4px 5px 0px 5px;
+	border: #C3DAFF 1px solid;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr=#ffffff, EndColorStr=#C3DAF5); 
+	cursor: hand; 
+	color: #2C59AB; 	
+}
+
+ .TDEButton_mouseover
+{
+	width:70px;
+	height: 23px;
+	border: #C3DAFF 1px solid;
+	margin:4px 5px 0px 5px;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr=#ffffff, EndColorStr=#D7E7FA); 
+	cursor: hand; 
+	color: #2C59AB; 	
+}
+
+ .TDEButton_mousedown
+{
+	width:70px;
+	height: 23px;
+	border: #C3DAFF 1px solid;
+	margin:4px 5px 0px 5px;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr=#ffffff, EndColorStr=#C3DAF5); 
+	cursor: hand; 
+	color: #2C59AB; 	
+}
+
+ .TDEButton_mouseup
+{
+	width:70px;
+	height: 23px;
+	border: #C3DAFF 1px solid;
+	margin:4px 5px 0px 5px;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr=#ffffff, EndColorStr=#C3DAF5); 
+	cursor: hand; 
+	color: #2C59AB;	
+}

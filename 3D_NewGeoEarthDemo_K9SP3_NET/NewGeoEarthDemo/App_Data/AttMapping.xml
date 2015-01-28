@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AttMapping>
+    <Field key="CHFCAC" value="用户ID" />
+    <Field key="CHTC" value="图层编号" />
+    <Field key="PKMC" value="项目名称" /> 
+	<Field key="QDAEA" value="承担单位" />
+	<Field key="QDACA" value="始时间" />
+	<Field key="QDACB" value="结束时间" />
+	<Field key="PKLY" value="项目来源" />
+	<Field key="JJGFA" value="项目费用" />
+	<Field key="QDAED" value="负责人" />
+	<Field key="BGIB" value="专业种类" />
+	<Field key="BGIBA" value="专业子类" />
+	<Field key="PKAA" value="◆矿产分类" />
+	<Field key="KCC" value="◆勘查对象" />
+	<Field key="KCAAA" value="◆矿产地号" />
+	<Field key="CHAMDB" value="比例尺" />
+	<Field key="CHAHB" value="地理坐标" />
+	<Field key="CHAO" value="工区面积" />
+	<Field key="CHAMAC" value="*地图编号" />
+	<Field key="XZHQH" value="行政区划" />
+	<Field key="JJGAA" value="成果名称" />
+	<Field key="PKGW" value="◆工作量" />
+	<Field key="JJYS" value="验收情况" />
+	<Field key="JJGAC" value="验收单位" />
+	<Field key="YBCF" value="原档存放(单位)" />
+	<Field key="PKIIM" value="资料保管(单位)" />
+	<Field key="HJIB" value="汇交类别" />
+	<Field key="CHTIX" value="保存形式" />
+	<Field key="PKIIN" value="档案号" />
+	<Field key="NOTE" value="备注" />
+	<Field key="CHTKR" value="填卡人" />
+	<Field key="CHLRR" value="录入人" />  
+	
+	<Field key="CHTC2" value="工作名称" />  
+	<Field key="KCAAA2" value="比例尺" />  
+	<Field key="JJDAJ" value="数据单位" />
+	 
+	<Field key="JJDAJ2" value="	矿产地名" />  
+	<Field key="DWAAC" value="	地理经度" />  
+	<Field key="DWAAD" value="	地理纬度" />  
+	<Field key="PKGKB" value="	矿床规模" />  
+	
+	
+</AttMapping>
